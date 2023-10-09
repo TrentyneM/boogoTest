@@ -1,0 +1,222 @@
+# BoogoENGINE
+# Software is Copyright (C) Garage Software
+
+# BackgroundArt by: @stoned_2d_bone
+# Program by: @trentyne_m
+
+# Import Modules
+import os			# OS Shell Extensions
+import sys			# Python System Extensions
+import time			# Timers and Delays
+import pygame		# Pygame Library
+
+# Display E
+
+# Display Engine Controls
+def engineControls():
+
+	os.system("clear")
+
+	print("--- BoogoENGINE === Controls ---")
+	print("================================")
+	print("Arrow Keys -      Movement      ")
+	print("  Space    -  Change Background ")
+	print("    U      -   Increase Speed   ")
+	print("    I      -   Decrease Speed   ")
+	print("    Z      -    Fire Bullet     ")
+	print("--------------------------------")
+
+	return None
+
+# Debug HUD Drawing
+def drawDebugHUD(font, playerX, playerY, playerSpeed, backgroundVal, drawingSurface):
+
+	# Convert X/Y to strings to display
+	playerXPosString = str(playerX)
+	playerYPosString = str(playerY)
+	playerSpeedString = str(playerSpeed)
+	backgroundValString = str(backgroundVal)
+
+	# Font Color
+	debugHUDColor = (255, 255, 255)
+
+	# Render out values to display
+	playerXPosDisplay = font.render("X: " + playerXPosString, True, debugHUDColor)
+	playerYPosDisplay = font.render("Y: " + playerYPosString, True, debugHUDColor)
+	playerSpeedDisplay = font.render("Speed: " + playerSpeedString, True, debugHUDColor)
+	backgroundValDisplay = font.render("Background: "+ backgroundValString, True, debugHUDColor)
+	copyrightString = font.render("Copyright (C) Trentyne Morgan.", True, debugHUDColor)
+
+	# Create Drawing Surfaces
+	playerXTextSurface = playerXPosDisplay.get_rect()
+	playerYTextSurface = playerYPosDisplay.get_rect()
+	playerSpeedSurface = playerSpeedDisplay.get_rect()
+	backgroundValSurface = backgroundValDisplay.get_rect()
+
+	# Draw HUD Text to Screen
+	drawingSurface.blit(playerXPosDisplay, (20, 20))
+	drawingSurface.blit(playerYPosDisplay, (20, 40))
+	drawingSurface.blit(playerSpeedDisplay, (20, 60))
+	drawingSurface.blit(backgroundValDisplay, (20, 80))
+	drawingSurface.blit(copyrightString, (20, 580))
+
+# Initalize Pygame
+pygame.init()
+
+# Show Engine Controls
+engineControls()
+
+# Game Window Attributes
+gameWindowWidth = 500
+gameWindowHeight = 600
+windowFontSize = 10
+
+# Create Main Window
+mainApplicationWindow = pygame.display.set_mode((gameWindowWidth, gameWindowHeight))
+pygame.display.set_caption("BoogoENGINE | (C) by Garage Software.")
+
+# Font Stuff
+applicationFontSize = 10
+applicationFontFile = pygame.font.Font('PressStart2P.ttf', applicationFontSize)
+
+# Import Backgrounds by @stoned_2d_bone
+OTHR_BG = pygame.image.load("OTHR.png")
+Crim_BG = pygame.image.load("Crimson.png")
+STAR_BG = pygame.image.load("space.png")
+
+# Scale all Backgrounds
+OTHRScaled = pygame.transform.scale(OTHR_BG, (gameWindowWidth, gameWindowHeight))
+CrimScaled = pygame.transform.scale(Crim_BG, (gameWindowWidth, gameWindowHeight))
+StarScaled = pygame.transform.scale(STAR_BG, (gameWindowWidth, gameWindowHeight))
+
+# Background List
+levelBackgrounds = [OTHRScaled, CrimScaled, StarScaled]
+backgroundIndex = 0
+
+# RGB Color Values
+RGB_GREEN = (0, 255, 0)
+RGB_BLACK = (0, 0, 0)
+RGB_YELLOW = (255, 255, 255)
+
+# Player Attributes
+playerImage = pygame.image.load("boogoPixel.png")
+playerSurface = playerImage.get_rect()
+playerXPos = gameWindowWidth / 2
+playerYPos = gameWindowHeight / 2
+playerVelocity = 5
+
+# Projectile Attributes
+bulletColor = RGB_YELLOW
+bulletWidth = 2
+bulletHeight = 1
+bulletYPos = 0
+bulletSpeed = 5
+
+# Loop State
+applicationEventLoop = True
+
+# Game Event Loop
+while applicationEventLoop:
+
+	try:
+
+		# Loop Delay by 100 Milliseconds
+		pygame.time.delay(50)
+
+		# Detect all PyGame Events
+		for event in pygame.event.get():
+
+			# Detect Quit Event
+			if event.type == pygame.QUIT:
+
+				# Clear the screen
+				os.system("clear")
+
+				# Quit Pygame
+				pygame.quit()
+
+				# Exit Application
+				sys.exit(1)
+
+				break
+
+		# Gives us 1 or 0 values of key pressed
+		keysPressed = pygame.key.get_pressed()
+
+		# If left is pressed, let player go left.
+		if keysPressed[pygame.K_LEFT]:
+
+			# Subtract Player's X Position by Velocity
+			playerXPos -= playerVelocity
+
+
+		# If right is pressed, let player go right.
+		if keysPressed[pygame.K_RIGHT]:
+
+			# Add to Player's X Position
+			playerXPos += playerVelocity
+
+
+		# If up is pressed, let player go up.
+		if keysPressed[pygame.K_UP]:
+
+			# Subtract Player's Y Position
+			playerYPos -= playerVelocity
+
+
+		# If down is pressed, let player go down.
+		if keysPressed[pygame.K_DOWN]:
+
+			# Add to Player's Y Position
+			playerYPos += playerVelocity
+
+
+		# If space is pressed, change the background.
+		if keysPressed[pygame.K_SPACE]:
+
+			backgroundIndex += 1
+
+
+		# If u is pressed, increase player speed.
+		if keysPressed[pygame.K_u]:
+
+			# Increase Player Speed
+			playerVelocity += 1
+
+
+		# If i pressed, decrease player speed.
+		if keysPressed[pygame.K_i]:
+
+			# Decrease Player Speed
+			playerVelocity -= 1
+
+
+		# If z pressed, fire a bullet
+		if keysPressed[pygame.K_z]:
+
+			# TODO:
+			# Research Projectile Physics
+			pass
+
+		# Draw the background from levelBackgrounds[Index] at 0,0
+		try:
+
+			mainApplicationWindow.blit(levelBackgrounds[backgroundIndex], (0, 0))
+
+		except IndexError:
+
+			backgroundIndex = 0
+
+		# Draw the Player Character
+		mainApplicationWindow.blit(playerImage, (playerXPos, playerYPos))
+
+		# Draw Debug HUD
+		drawDebugHUD(applicationFontFile, playerXPos, playerYPos, playerVelocity, backgroundIndex, mainApplicationWindow)
+
+		# Update the Display
+		pygame.display.update()
+
+	except KeyboardInterrupt:
+
+		sys.exit(1)
+
